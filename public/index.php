@@ -1,6 +1,8 @@
 <?php
 // public/index.php
 
+session_start();
+
 require_once __DIR__ . '/../config/database.php';
 
 // =========================
@@ -42,6 +44,37 @@ $daftar_fasilitas = $stmt->fetchAll();
 $tipe_saat_ini = $_GET['tipe'] ?? '';
 $lokasi_saat_ini = $_GET['lokasi'] ?? '';
 $kapasitas_saat_ini = $_GET['kapasitas'] ?? '';
+
+// ========================================
+// NAVBAR BERDASARKAN STATUS LOGIN
+// ========================================
+
+$sudah_login =
+    isset($_SESSION['role']);
+
+$dashboard_link =
+    '../views/user/dashboard.php';
+
+if ($sudah_login) {
+
+    if ($_SESSION['role'] === 'admin') {
+
+        $dashboard_link =
+            '../views/admin/dashboard.php';
+
+    } elseif ($_SESSION['role'] === 'petugas') {
+
+        $dashboard_link =
+            '../views/officer/dashboard.php';
+
+    } elseif ($_SESSION['role'] === 'pengguna') {
+
+        $dashboard_link =
+            '../views/user/dashboard.php';
+
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -1144,20 +1177,39 @@ $kapasitas_saat_ini = $_GET['kapasitas'] ?? '';
 
         <div class="nav-right">
 
-            <a
-                href="../views/auth/login.php"
-                class="nav-login"
-            >
-                Login
-            </a>
+            <?php if ($sudah_login): ?>
 
+                <a
+                    href="<?php echo htmlspecialchars($dashboard_link); ?>"
+                    class="nav-login"
+                >
+                    Dashboard
+                </a>
 
-            <a
-                href="../views/auth/register.php"
-                class="nav-register"
-            >
-                Daftar
-            </a>
+                <a
+                    href="../app/controllers/process_logout.php"
+                    class="nav-register"
+                >
+                    Logout
+                </a>
+
+            <?php else: ?>
+
+                <a
+                    href="../views/auth/login.php"
+                    class="nav-login"
+                >
+                    Login
+                </a>
+
+                <a
+                    href="../views/auth/register.php"
+                    class="nav-register"
+                >
+                    Daftar
+                </a>
+
+            <?php endif; ?>
 
         </div>
 
