@@ -1,255 +1,860 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | CampusReserve</title>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Login | ReservasiKampus</title>
 
     <style>
+
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
+
+
+        :root {
+
+            --blue-dark: #063b70;
+            --blue: #0879d1;
+            --blue-light: #118de4;
+
+            --text: #172033;
+            --muted: #6b7280;
+
+            --border: #e3e9f0;
+
+            --bg: #f5f8fc;
+
+            --white: #ffffff;
+        }
+
 
         body {
+
             min-height: 100vh;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            color: var(--text);
+
+            background: var(--bg);
+        }
+
+
+        a {
+            text-decoration: none;
+        }
+
+
+        /* =====================================
+           NAVBAR
+        ===================================== */
+
+        .navbar {
+
+            height: 72px;
+
+            background: rgba(
+                255,
+                255,
+                255,
+                0.96
+            );
+
+            border-bottom:
+                1px solid
+                var(--border);
+
             display: flex;
+
             align-items: center;
-            justify-content: center;
-            padding: 20px;
+        }
 
-            font-family: Arial, Helvetica, sans-serif;
-            color: white;
 
-            background:
-                linear-gradient(
-                    135deg,
-                    #06386b 0%,
-                    #075ca8 50%,
-                    #1188e8 100%
+        .navbar-inner {
+
+            width:
+                min(
+                    1180px,
+                    calc(100% - 40px)
                 );
+
+            margin: auto;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
         }
 
-        .container {
-            width: 430px;
-            padding: 42px;
-            
-            background: rgba(255, 255, 255, 0.10);
-            border: 1px solid rgba(255, 255, 255, 0.22);
-            border-radius: 24px;
-
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-
-            box-shadow:
-                0 25px 60px rgba(0, 0, 0, 0.25),
-                inset 0 1px 0 rgba(255, 255, 255, 0.12);
-        }
 
         .logo {
-            text-align: center;
-            font-size: 18px;
+
+            color: var(--blue-dark);
+
+            font-size: 21px;
+
             font-weight: 700;
-            margin-bottom: 38px;
+
+            letter-spacing: -0.4px;
         }
+
 
         .logo span {
             font-weight: 400;
         }
 
-        .title {
-            margin-bottom: 28px;
+
+        .nav-right {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
         }
 
-        .title h1 {
-            font-size: 30px;
-            margin-bottom: 8px;
-        }
 
-        .title p {
-            color: rgba(255, 255, 255, 0.70);
-            font-size: 13px;
-            line-height: 1.6;
-        }
+        .nav-link {
 
-        .form-group {
-            margin-bottom: 18px;
-        }
+            color:
+                var(--blue-dark);
 
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
+            padding:
+                9px 12px;
 
             font-size: 12px;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.88);
+
+            font-weight: 700;
         }
 
-        .form-group input {
-            width: 100%;
-            height: 46px;
-            padding: 0 14px;
 
-            border: 1px solid rgba(255, 255, 255, 0.35);
-            border-radius: 10px;
+        .nav-button {
 
-            background: rgba(255, 255, 255, 0.95);
-            color: #1f2937;
+            background:
+                var(--blue-dark);
 
-            font-size: 13px;
-            outline: none;
+            color: white;
+
+            padding:
+                10px 16px;
+
+            border-radius: 9px;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            transition: .2s;
         }
 
-        .form-group input::placeholder {
-            color: #9ca3af;
+
+        .nav-button:hover {
+
+            background: #052f59;
         }
 
-        .form-group input:focus {
-            border-color: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.10);
-        }
 
-        .forgot {
+        /* =====================================
+           MAIN
+        ===================================== */
+
+        .main {
+
+            min-height:
+                calc(
+                    100vh - 72px
+                );
+
             display: flex;
-            justify-content: flex-end;
-            margin-top: -8px;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding:
+                55px 20px;
+        }
+
+
+        /* =====================================
+           LOGIN CARD
+        ===================================== */
+
+        .login-card {
+
+            width:
+                min(
+                    850px,
+                    100%
+                );
+
+            min-height: 490px;
+
+            display: grid;
+
+            grid-template-columns:
+                0.92fr
+                1.08fr;
+
+            background:
+                var(--white);
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 20px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 18px 50px
+                rgba(
+                    25,
+                    56,
+                    88,
+                    0.10
+                );
+        }
+
+
+        /* =====================================
+           LEFT
+        ===================================== */
+
+        .login-intro {
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #073765 0%,
+                    #0869b5 55%,
+                    #118de4 100%
+                );
+
+            color: white;
+
+            padding: 48px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+        }
+
+
+        .intro-label {
+
+            display: inline-flex;
+
+            align-self: flex-start;
+
+            padding:
+                6px 10px;
+
+            border:
+                1px solid
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.18
+                );
+
+            border-radius: 999px;
+
+            color:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.84
+                );
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.08
+                );
+
+            font-size: 10px;
+
             margin-bottom: 20px;
         }
 
-        .forgot a {
-            color: rgba(255, 255, 255, 0.72);
-            font-size: 11px;
-            text-decoration: none;
+
+        .intro-logo {
+
+            font-size: 20px;
+
+            font-weight: 700;
+
+            margin-bottom: 28px;
         }
 
-        .forgot a:hover {
-            color: white;
-            text-decoration: underline;
+
+        .intro-logo span {
+            font-weight: 400;
         }
 
-        .btn {
-            width: 100%;
-            height: 46px;
 
-            border: none;
-            border-radius: 10px;
+        .login-intro h1 {
 
-            background: #063b70;
-            color: white;
+            font-size: 31px;
+
+            line-height: 1.2;
+
+            margin-bottom: 14px;
+        }
+
+
+        .login-intro p {
+
+            max-width: 310px;
+
+            color:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.76
+                );
 
             font-size: 13px;
+
+            line-height: 1.7;
+        }
+
+
+        .intro-line {
+
+            width: 52px;
+
+            height: 3px;
+
+            margin-top: 26px;
+
+            border-radius: 99px;
+
+            background: rgba(
+                255,
+                255,
+                255,
+                0.80
+            );
+        }
+
+
+        /* =====================================
+           RIGHT
+        ===================================== */
+
+        .login-form-area {
+
+            padding:
+                55px 52px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+        }
+
+
+        .login-form-area h2 {
+
+            font-size: 26px;
+
+            margin-bottom: 7px;
+
+            color: var(--text);
+        }
+
+
+        .form-subtitle {
+
+            color: var(--muted);
+
+            font-size: 12px;
+
+            margin-bottom: 27px;
+
+            line-height: 1.6;
+        }
+
+
+        /* =====================================
+           FORM
+        ===================================== */
+
+        .form-group {
+
+            margin-bottom: 18px;
+        }
+
+
+        .form-group label {
+
+            display: block;
+
+            margin-bottom: 7px;
+
+            color:
+                #364152;
+
+            font-size: 11px;
+
+            font-weight: 700;
+        }
+
+
+        .form-group input {
+
+            width: 100%;
+
+            height: 45px;
+
+            padding:
+                0 13px;
+
+            border:
+                1px solid
+                #d6dee8;
+
+            border-radius: 9px;
+
+            background: white;
+
+            color: var(--text);
+
+            font-size: 12px;
+
+            outline: none;
+
+            transition: .2s;
+        }
+
+
+        .form-group input::placeholder {
+
+            color:
+                #9aa5b1;
+        }
+
+
+        .form-group input:focus {
+
+            border-color:
+                var(--blue);
+
+            box-shadow:
+                0 0 0 3px
+                rgba(
+                    8,
+                    121,
+                    209,
+                    0.08
+                );
+        }
+
+
+        /* =====================================
+           BUTTON
+        ===================================== */
+
+        .submit-button {
+
+            width: 100%;
+
+            height: 45px;
+
+            margin-top: 4px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            background:
+                var(--blue-dark);
+
+            color: white;
+
+            font-size: 12px;
+
             font-weight: 700;
 
             cursor: pointer;
-            transition: 0.2s;
+
+            transition: .2s;
         }
 
-        .btn:hover {
-            background: #052f59;
-            transform: translateY(-1px);
+
+        .submit-button:hover {
+
+            background:
+                #052f59;
+
+            transform:
+                translateY(-1px);
         }
 
-        .register {
-            margin-top: 22px;
+
+        /* =====================================
+           REGISTER
+        ===================================== */
+
+        .register-text {
+
+            margin-top: 20px;
+
             text-align: center;
 
-            color: rgba(255, 255, 255, 0.65);
+            color: var(--muted);
+
             font-size: 11px;
         }
 
-        .register a {
-            color: white;
+
+        .register-text a {
+
+            color:
+                var(--blue);
+
             font-weight: 700;
-            text-decoration: none;
         }
 
-        .register a:hover {
-            text-decoration: underline;
+
+        .register-text a:hover {
+
+            text-decoration:
+                underline;
         }
+
+
+        /* =====================================
+           HOME LINK
+        ===================================== */
+
+        .home-link {
+
+            display: inline-block;
+
+            margin-top: 18px;
+
+            text-align: center;
+
+            color:
+                #7b8794;
+
+            font-size: 10px;
+        }
+
+
+        .home-link:hover {
+
+            color:
+                var(--blue);
+        }
+
+
+        /* =====================================
+           RESPONSIVE
+        ===================================== */
+
+        @media (max-width: 760px) {
+
+            .login-card {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .login-intro {
+
+                padding:
+                    35px 32px;
+            }
+
+
+            .login-intro h1 {
+
+                font-size:
+                    26px;
+            }
+
+
+            .login-form-area {
+
+                padding:
+                    38px 32px;
+            }
+
+        }
+
 
         @media (max-width: 500px) {
-            .container {
-                width: 100%;
-                padding: 32px 25px;
+
+            .navbar-inner {
+
+                width:
+                    calc(
+                        100% - 26px
+                    );
             }
+
+
+            .nav-link {
+
+                display:
+                    none;
+            }
+
+
+            .main {
+
+                padding:
+                    25px 13px;
+            }
+
+
+            .login-card {
+
+                border-radius:
+                    16px;
+            }
+
         }
+
     </style>
+
 </head>
+
 
 <body>
 
-<div class="container">
 
-    <div class="logo">
-        Campus<span>Reserve</span>
-    </div>
+<!-- =====================================
+     NAVBAR
+===================================== -->
 
-    <div class="title">
-        <h1>Login</h1>
+<header class="navbar">
 
-        <p>
-            Masuk ke akun CampusReserve untuk
-            melakukan reservasi ruangan kampus.
-        </p>
-    </div>
+    <div class="navbar-inner">
 
-    <form
-        action="../../app/controllers/process_login.php"
-        method="POST"
-    >
 
-        <div class="form-group">
-            <label for="email">
-                Email
-            </label>
-
-            <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="nama@email.com"
-                required
-            >
-        </div>
-
-        <div class="form-group">
-            <label for="password">
-                Password
-            </label>
-
-            <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Password"
-                required
-            >
-        </div>
-
-        <div class="forgot">
-            <a href="#" onclick="return false;">
-                Lupa password?
-            </a>
-        </div>
-
-        <button
-            type="submit"
-            class="btn"
+        <a
+            href="../../public/index.php"
+            class="logo"
         >
-            Sign in
-        </button>
-
-    </form>
-
-    <div class="register">
-        Belum punya akun?
-        <a href="register.php">
-            Daftar sekarang
+            Reservasi<span>Kampus</span>
         </a>
+
+
+        <div class="nav-right">
+
+            <a
+                href="../../public/index.php"
+                class="nav-link"
+            >
+                Beranda
+            </a>
+
+
+            <a
+                href="register.php"
+                class="nav-button"
+            >
+                Daftar
+            </a>
+
+        </div>
+
     </div>
 
-</div>
+</header>
+
+
+
+<!-- =====================================
+     MAIN
+===================================== -->
+
+<main class="main">
+
+
+    <div class="login-card">
+
+
+        <!-- =================================
+             LEFT INTRO
+        ================================== -->
+
+        <section class="login-intro">
+
+
+            <div class="intro-logo">
+
+                Reservasi<span>Kampus</span>
+
+            </div>
+
+
+            <div class="intro-label">
+
+                SISTEM RESERVASI FASILITAS KAMPUS
+
+            </div>
+
+
+            <h1>
+
+                Kelola reservasi
+                ruangan dengan mudah.
+
+            </h1>
+
+
+            <p>
+
+                Temukan fasilitas kampus,
+                cek jadwal penggunaannya,
+                dan ajukan reservasi dalam
+                satu sistem.
+
+            </p>
+
+
+
+
+        </section>
+
+
+
+        <!-- =================================
+             LOGIN FORM
+        ================================== -->
+
+        <section class="login-form-area">
+
+
+            <h2>
+                Selamat datang kembali
+            </h2>
+
+
+            <p class="form-subtitle">
+
+                Masuk ke akun ReservasiKampus
+                untuk melanjutkan.
+
+            </p>
+
+
+            <form
+                action="../../app/controllers/process_login.php"
+                method="POST"
+            >
+
+
+                <div class="form-group">
+
+                    <label for="email">
+                        Email
+                    </label>
+
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="nama@email.com"
+                        autocomplete="email"
+                        required
+                    >
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Masukkan password"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                </div>
+
+
+
+                <button
+                    type="submit"
+                    class="submit-button"
+                >
+                    Login
+                </button>
+
+
+            </form>
+
+
+            <div class="register-text">
+
+                Belum punya akun?
+
+                <a href="register.php">
+                    Daftar sekarang
+                </a>
+
+            </div>
+
+
+            <a
+                href="../../public/index.php"
+                class="home-link"
+            >
+                ← Kembali ke Beranda
+
+            </a>
+
+
+        </section>
+
+
+    </div>
+
+
+</main>
+
 
 </body>
+
 </html>
