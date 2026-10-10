@@ -4,12 +4,11 @@ require_once __DIR__ . '/../../config/database.php';
 
 $success = false;
 $message = '';
-$redirect_text = '';
-$redirect_link = '../../views/auth/login.php';
+$redirect_text = 'Kembali ke Register';
+$redirect_link = '../../views/auth/register.php';
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // Ambil data dari form
     $nama = trim($_POST['nama'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -19,23 +18,28 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // VALIDASI
     // =========================
 
-    if (empty($nama) || empty($email) || empty($password) || empty($tipe_pengguna)) {
+    if (
+        $nama === '' ||
+        $email === '' ||
+        $password === '' ||
+        $tipe_pengguna === ''
+    ) {
 
-        $message = "Semua field wajib diisi.";
-        $redirect_text = "Kembali ke Register";
-        $redirect_link = '../../views/auth/register.php';
+        $message = 'Semua field wajib diisi.';
 
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
-        $message = "Format email tidak valid.";
-        $redirect_text = "Kembali ke Register";
-        $redirect_link = '../../views/auth/register.php';
+        $message = 'Format email tidak valid.';
 
-    } elseif (!in_array($tipe_pengguna, ['mahasiswa', 'dosen', 'staf'])) {
+    } elseif (
+        !in_array(
+            $tipe_pengguna,
+            ['mahasiswa', 'dosen', 'staf'],
+            true
+        )
+    ) {
 
-        $message = "Status sivitas tidak valid.";
-        $redirect_text = "Kembali ke Register";
-        $redirect_link = '../../views/auth/register.php';
+        $message = 'Status sivitas tidak valid.';
 
     } else {
 
@@ -48,10 +52,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             PASSWORD_DEFAULT
         );
 
-        // Semua registrasi umum menjadi pengguna
+        // Register umum = pengguna
         $role = 'pengguna';
 
-        // Menunggu verifikasi admin
+        // Akun harus diverifikasi admin
         $status_akun = 'pending';
 
         try {
@@ -61,8 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             // =========================
 
             $sql = "
-                INSERT INTO users
-                (
+                INSERT INTO users (
                     nama,
                     email,
                     password,
@@ -70,8 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     tipe_pengguna,
                     status_akun
                 )
-                VALUES
-                (
+                VALUES (
                     :nama,
                     :email,
                     :password,
@@ -94,46 +96,37 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             $success = true;
 
-            $message = "
-                Akun berhasil dibuat.
-                <br>
-                Silakan tunggu verifikasi admin
-                sebelum melakukan login.
-            ";
+            $message =
+                'Akun berhasil dibuat. ' .
+                'Silakan tunggu verifikasi admin ' .
+                'sebelum melakukan login.';
 
-            $redirect_text = "Kembali ke Login";
-            $redirect_link = '../../views/auth/login.php';
+            $redirect_text = 'Kembali ke Login';
+
+            $redirect_link =
+                '../../views/auth/login.php';
 
         } catch (PDOException $e) {
 
-            // Email sudah terdaftar
-            if ($e->getCode() == 23000) {
+            // Email sudah digunakan
+            if ((string) $e->getCode() === '23000') {
 
-                $message = "
-                    Email tersebut sudah terdaftar.
-                    <br>
-                    Silakan gunakan email lain.
-                ";
+                $message =
+                    'Email tersebut sudah terdaftar. ' .
+                    'Silakan gunakan email lain.';
 
             } else {
 
-                $message = "
-                    Terjadi kesalahan saat membuat akun.
-                    <br>
-                    Silakan coba lagi.
-                ";
+                $message =
+                    'Terjadi kesalahan saat membuat akun. ' .
+                    'Silakan coba lagi.';
             }
-
-            $redirect_text = "Kembali ke Register";
-            $redirect_link = '../../views/auth/register.php';
         }
     }
 
 } else {
 
-    $message = "Akses tidak valid.";
-    $redirect_text = "Kembali ke Register";
-    $redirect_link = '../../views/auth/register.php';
+    $message = 'Akses tidak valid.';
 }
 
 ?>
@@ -151,206 +144,310 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     >
 
     <title>
-        <?php echo $success ? 'Registrasi Berhasil' : 'Registrasi'; ?>
-        | CampusReserve
+
+        <?php
+        echo $success
+            ? 'Registrasi Berhasil'
+            : 'Registrasi Gagal';
+        ?>
+
+        | ReservasiKampus
+
     </title>
+
 
     <style>
 
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
+
+
+        :root {
+
+            --blue-dark: #063b70;
+            --blue: #0879d1;
+            --blue-light: #118de4;
+
+            --text: #172033;
+            --muted: #6b7280;
+
+            --border: #e3e9f0;
+
+            --bg: #f5f8fc;
+
+            --white: #ffffff;
+
+            --success: #0d9f6e;
+            --success-bg: #ecfdf5;
+
+            --danger: #c23b3b;
+            --danger-bg: #fff1f1;
+        }
+
 
         body {
 
             min-height: 100vh;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            padding: 20px;
 
             font-family:
                 Arial,
                 Helvetica,
                 sans-serif;
 
-            color: white;
+            color: var(--text);
 
-            background:
-                linear-gradient(
-                    135deg,
-                    #06386b 0%,
-                    #075ca8 50%,
-                    #1188e8 100%
-                );
+            background: var(--bg);
         }
 
-        .container {
 
-            width: 430px;
+        a {
+            text-decoration: none;
+        }
 
-            padding: 42px;
+
+        /* =====================================
+           NAVBAR
+        ===================================== */
+
+        .navbar {
+
+            height: 72px;
 
             background:
                 rgba(
                     255,
                     255,
                     255,
-                    0.10
+                    0.96
                 );
 
-            border:
+            border-bottom:
                 1px solid
-                rgba(
-                    255,
-                    255,
-                    255,
-                    0.22
-                );
+                var(--border);
 
-            border-radius: 24px;
+            display: flex;
 
-            backdrop-filter:
-                blur(18px);
-
-            -webkit-backdrop-filter:
-                blur(18px);
-
-            box-shadow:
-
-                0 25px 60px
-                rgba(
-                    0,
-                    0,
-                    0,
-                    0.25
-                ),
-
-                inset 0 1px 0
-                rgba(
-                    255,
-                    255,
-                    255,
-                    0.12
-                );
-
-            text-align: center;
+            align-items: center;
         }
 
-        /* LOGO */
+
+        .navbar-inner {
+
+            width:
+                min(
+                    1180px,
+                    calc(100% - 40px)
+                );
+
+            margin: auto;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+        }
+
 
         .logo {
 
-            font-size: 18px;
+            color:
+                var(--blue-dark);
+
+            font-size: 21px;
 
             font-weight: 700;
 
-            margin-bottom: 34px;
+            letter-spacing:
+                -0.4px;
         }
+
 
         .logo span {
 
             font-weight: 400;
         }
 
-        /* ICON */
 
-        .icon {
-
-            width: 76px;
-            height: 76px;
-
-            margin:
-                0 auto 24px;
+        .nav-right {
 
             display: flex;
 
             align-items: center;
-            justify-content: center;
 
-            border-radius: 50%;
+            gap: 8px;
+        }
+
+
+        .nav-link {
+
+            color:
+                var(--blue-dark);
+
+            padding:
+                9px 12px;
+
+            font-size: 12px;
+
+            font-weight: 700;
+        }
+
+
+        .nav-button {
 
             background:
-                rgba(
-                    255,
-                    255,
-                    255,
-                    0.14
+                var(--blue-dark);
+
+            color: white;
+
+            padding:
+                10px 16px;
+
+            border-radius:
+                9px;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            transition:
+                0.2s;
+        }
+
+
+        .nav-button:hover {
+
+            background:
+                #052f59;
+        }
+
+
+        /* =====================================
+           MAIN
+        ===================================== */
+
+        .main {
+
+            min-height:
+                calc(
+                    100vh - 72px
                 );
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding:
+                55px 20px;
+        }
+
+
+        /* =====================================
+           RESULT CARD
+        ===================================== */
+
+        .result-card {
+
+            width:
+                min(
+                    850px,
+                    100%
+                );
+
+            min-height:
+                460px;
+
+            display: grid;
+
+            grid-template-columns:
+                0.92fr
+                1.08fr;
+
+            background:
+                var(--white);
 
             border:
                 1px solid
-                rgba(
-                    255,
-                    255,
-                    255,
-                    0.20
-                );
+                var(--border);
 
-            font-size: 34px;
+            border-radius:
+                20px;
+
+            overflow: hidden;
 
             box-shadow:
-                inset 0 1px 0
+                0 18px 50px
                 rgba(
-                    255,
-                    255,
-                    255,
+                    25,
+                    56,
+                    88,
                     0.10
                 );
         }
 
-        /* TITLE */
 
-        .title {
+        /* =====================================
+           LEFT PANEL
+        ===================================== */
 
-            margin-bottom: 12px;
-        }
-
-        .title h1 {
-
-            font-size: 28px;
-
-            line-height: 1.2;
-
-            margin-bottom: 10px;
-        }
-
-        .title p {
-
-            font-size: 13px;
-
-            line-height: 1.7;
-
-            color:
-                rgba(
-                    255,
-                    255,
-                    255,
-                    0.70
-                );
-        }
-
-        /* MESSAGE */
-
-        .message {
-
-            margin-top: 24px;
-
-            padding: 15px 17px;
-
-            border-radius: 12px;
+        .result-intro {
 
             background:
-                rgba(
-                    255,
-                    255,
-                    255,
-                    0.07
+                linear-gradient(
+                    145deg,
+                    #073765 0%,
+                    #0869b5 55%,
+                    #118de4 100%
                 );
+
+            color: white;
+
+            padding:
+                48px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+        }
+
+
+        .intro-logo {
+
+            font-size:
+                20px;
+
+            font-weight:
+                700;
+
+            margin-bottom:
+                28px;
+        }
+
+
+        .intro-logo span {
+
+            font-weight:
+                400;
+        }
+
+
+        .intro-label {
+
+            display:
+                inline-flex;
+
+            align-self:
+                flex-start;
+
+            padding:
+                6px 10px;
 
             border:
                 1px solid
@@ -358,7 +455,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     255,
                     255,
                     255,
-                    0.12
+                    0.18
+                );
+
+            border-radius:
+                999px;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.08
                 );
 
             color:
@@ -366,199 +474,663 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     255,
                     255,
                     255,
-                    0.82
+                    0.84
                 );
 
-            font-size: 12px;
+            font-size:
+                10px;
 
-            line-height: 1.7;
+            margin-bottom:
+                20px;
         }
 
-        /* BUTTON */
 
-        .button {
+        .result-intro h1 {
+
+            font-size:
+                31px;
+
+            line-height:
+                1.2;
+
+            margin-bottom:
+                14px;
+        }
+
+
+        .result-intro p {
+
+            max-width:
+                310px;
+
+            color:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.76
+                );
+
+            font-size:
+                13px;
+
+            line-height:
+                1.7;
+        }
+
+
+        /* =====================================
+           RIGHT CONTENT
+        ===================================== */
+
+        .result-content {
+
+            padding:
+                55px 52px;
 
             display: flex;
 
+            flex-direction: column;
+
             align-items: center;
+
             justify-content: center;
+
+            text-align: center;
+        }
+
+
+        /* =====================================
+           ICON
+        ===================================== */
+
+        .result-icon {
+
+            width:
+                70px;
+
+            height:
+                70px;
+
+            border-radius:
+                50%;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            margin-bottom:
+                22px;
+
+            font-size:
+                29px;
+
+            font-weight:
+                700;
+        }
+
+
+        .result-icon.success {
+
+            background:
+                var(--success-bg);
+
+            color:
+                var(--success);
+
+            border:
+                1px solid
+                #c9efdf;
+        }
+
+
+        .result-icon.error {
+
+            background:
+                var(--danger-bg);
+
+            color:
+                var(--danger);
+
+            border:
+                1px solid
+                #f0d0d0;
+        }
+
+
+        /* =====================================
+           TITLE
+        ===================================== */
+
+        .result-content h2 {
+
+            font-size:
+                27px;
+
+            margin-bottom:
+                8px;
+
+            color:
+                var(--text);
+        }
+
+
+        .result-subtitle {
+
+            color:
+                var(--muted);
+
+            font-size:
+                12px;
+
+            line-height:
+                1.7;
+
+            max-width:
+                390px;
+        }
+
+
+        /* =====================================
+           MESSAGE
+        ===================================== */
+
+        .result-message {
 
             width: 100%;
 
-            height: 46px;
+            margin-top:
+                22px;
 
-            margin-top: 24px;
+            padding:
+                14px 16px;
 
-            border-radius: 10px;
+            border:
+                1px solid
+                var(--border);
 
-            background: #063b70;
+            border-radius:
+                10px;
+
+            background:
+                #f8fafc;
+
+            color:
+                #657181;
+
+            font-size:
+                11px;
+
+            line-height:
+                1.6;
+        }
+
+
+        /* =====================================
+           BUTTON
+        ===================================== */
+
+        .result-button {
+
+            width:
+                100%;
+
+            height:
+                45px;
+
+            margin-top:
+                20px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            border-radius:
+                9px;
+
+            background:
+                var(--blue-dark);
 
             color: white;
 
-            font-size: 13px;
+            font-size:
+                12px;
 
-            font-weight: 700;
+            font-weight:
+                700;
 
-            text-decoration: none;
-
-            transition: 0.2s;
+            transition:
+                .2s;
         }
 
-        .button:hover {
 
-            background: #052f59;
+        .result-button:hover {
+
+            background:
+                #052f59;
 
             transform:
                 translateY(-1px);
         }
 
-        /* LOGIN TEXT */
 
-        .bottom-text {
+        /* =====================================
+           PENDING INFO
+        ===================================== */
 
-            margin-top: 20px;
+        .pending-info {
 
-            font-size: 11px;
+            margin-top:
+                17px;
 
             color:
-                rgba(
-                    255,
-                    255,
-                    255,
-                    0.60
-                );
+                #8792a0;
+
+            font-size:
+                10px;
+
+            line-height:
+                1.6;
         }
 
-        .bottom-text a {
 
-            color: white;
+        .pending-info strong {
 
-            font-weight: 700;
-
-            text-decoration: none;
+            color:
+                var(--blue-dark);
         }
 
-        .bottom-text a:hover {
 
-            text-decoration: underline;
+        /* =====================================
+           BACK LINK
+        ===================================== */
+
+        .back-link {
+
+            margin-top:
+                18px;
+
+            color:
+                var(--muted);
+
+            font-size:
+                10px;
         }
 
-        /* MOBILE */
+
+        .back-link:hover {
+
+            color:
+                var(--blue);
+        }
+
+
+        /* =====================================
+           RESPONSIVE
+        ===================================== */
+
+        @media (max-width: 760px) {
+
+            .result-card {
+
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .result-intro {
+
+                padding:
+                    35px 32px;
+            }
+
+
+            .result-intro h1 {
+
+                font-size:
+                    26px;
+            }
+
+
+            .result-content {
+
+                padding:
+                    40px 32px;
+            }
+
+        }
+
 
         @media (max-width: 500px) {
 
-            .container {
+            .navbar-inner {
 
-                width: 100%;
+                width:
+                    calc(
+                        100% - 26px
+                    );
+            }
+
+
+            .nav-link {
+
+                display:
+                    none;
+            }
+
+
+            .main {
 
                 padding:
-                    32px 24px;
+                    25px 13px;
             }
+
+
+            .result-card {
+
+                border-radius:
+                    16px;
+            }
+
         }
 
     </style>
 
 </head>
 
+
 <body>
 
-<div class="container">
 
-    <!-- LOGO -->
+<!-- =====================================
+     NAVBAR
+===================================== -->
 
-    <div class="logo">
-        Campus<span>Reserve</span>
-    </div>
+<header class="navbar">
 
-
-    <!-- ICON -->
-
-    <div class="icon">
-
-        <?php if ($success): ?>
-
-            ✓
-
-        <?php else: ?>
-
-            !
-
-        <?php endif; ?>
-
-    </div>
+    <div class="navbar-inner">
 
 
-    <!-- TITLE -->
+        <a
+            href="../../public/index.php"
+            class="logo"
+        >
 
-    <div class="title">
+            Reservasi<span>Kampus</span>
 
-        <?php if ($success): ?>
-
-            <h1>
-                Registrasi Berhasil
-            </h1>
-
-            <p>
-                Selamat, akun CampusReserve
-                berhasil dibuat.
-            </p>
-
-        <?php else: ?>
-
-            <h1>
-                Registrasi Gagal
-            </h1>
-
-            <p>
-                Akun belum dapat dibuat.
-                Silakan periksa informasi berikut.
-            </p>
-
-        <?php endif; ?>
-
-    </div>
+        </a>
 
 
-    <!-- MESSAGE -->
+        <div class="nav-right">
 
-    <div class="message">
-
-        <?php
-        echo $message;
-        ?>
-
-    </div>
-
-
-    <!-- BUTTON -->
-
-    <a
-        href="<?php echo htmlspecialchars($redirect_link); ?>"
-        class="button"
-    >
-
-        <?php
-        echo htmlspecialchars($redirect_text);
-        ?>
-
-    </a>
+            <a
+                href="../../public/index.php"
+                class="nav-link"
+            >
+                Beranda
+            </a>
 
 
-    <!-- BOTTOM -->
+            <?php if ($success): ?>
 
-    <?php if ($success): ?>
+                <a
+                    href="login.php"
+                    class="nav-button"
+                >
+                    Login
+                </a>
 
-        <div class="bottom-text">
+            <?php else: ?>
 
-            Akun akan berstatus
-            <strong>Pending</strong>
-            sampai diverifikasi admin.
+                <a
+                    href="register.php"
+                    class="nav-button"
+                >
+                    Register
+                </a>
+
+            <?php endif; ?>
 
         </div>
 
-    <?php endif; ?>
+    </div>
 
-</div>
+</header>
+
+
+
+<!-- =====================================
+     MAIN
+===================================== -->
+
+<main class="main">
+
+
+    <section class="result-card">
+
+
+        <!-- =================================
+             LEFT
+        ================================== -->
+
+        <div class="result-intro">
+
+
+            <div class="intro-logo">
+
+                Reservasi<span>Kampus</span>
+
+            </div>
+
+
+            <div class="intro-label">
+
+                <?php
+                echo $success
+                    ? 'SISTEM RESERVASI FASILITAS KAMPUS'
+                    : 'SISTEM RESERVASI FASILITAS KAMPUS';
+                ?>
+
+            </div>
+
+
+            <h1>
+
+                <?php if ($success): ?>
+
+                    Akunmu
+                    siap digunakan
+                    setelah diverifikasi.
+
+                <?php else: ?>
+
+                    Pendaftaran
+                    belum berhasil.
+
+                <?php endif; ?>
+
+            </h1>
+
+
+            <p>
+
+                <?php if ($success): ?>
+
+                    Admin perlu memverifikasi akun
+                    terlebih dahulu sebelum kamu
+                    dapat menggunakan layanan
+                    ReservasiKampus.
+
+                <?php else: ?>
+
+                    Periksa kembali data yang kamu
+                    masukkan kemudian coba lakukan
+                    pendaftaran kembali.
+
+                <?php endif; ?>
+
+            </p>
+
+
+        </div>
+
+
+
+        <!-- =================================
+             RIGHT
+        ================================== -->
+
+        <div class="result-content">
+
+
+            <!-- ICON -->
+
+            <div
+                class="
+                    result-icon
+                    <?php
+                    echo $success
+                        ? 'success'
+                        : 'error';
+                    ?>
+                "
+            >
+
+                <?php if ($success): ?>
+
+                    ✓
+
+                <?php else: ?>
+
+                    !
+
+                <?php endif; ?>
+
+            </div>
+
+
+
+            <!-- TITLE -->
+
+            <h2>
+
+                <?php
+
+                echo $success
+                    ? 'Registrasi Berhasil'
+                    : 'Registrasi Gagal';
+
+                ?>
+
+            </h2>
+
+
+            <p class="result-subtitle">
+
+                <?php if ($success): ?>
+
+                    Selamat, akun
+                    <strong>ReservasiKampus</strong>
+                    berhasil dibuat.
+
+                <?php else: ?>
+
+                    Akun belum dapat dibuat.
+                    Silakan periksa informasi
+                    berikut.
+
+                <?php endif; ?>
+
+            </p>
+
+
+
+            <!-- MESSAGE -->
+
+            <div class="result-message">
+
+                <?php
+
+                echo htmlspecialchars(
+                    $message
+                );
+
+                ?>
+
+            </div>
+
+
+
+            <!-- BUTTON -->
+
+            <a
+                href="<?php
+                    echo htmlspecialchars(
+                        $redirect_link
+                    );
+                ?>"
+                class="result-button"
+            >
+
+                <?php
+
+                echo htmlspecialchars(
+                    $redirect_text
+                );
+
+                ?>
+
+            </a>
+
+
+
+            <!-- PENDING -->
+
+            <?php if ($success): ?>
+
+                <p class="pending-info">
+
+                    Akun akan berstatus
+                    <strong>Pending</strong>
+                    sampai diverifikasi admin.
+
+                </p>
+
+            <?php endif; ?>
+
+
+
+            <!-- BACK -->
+
+            <a
+                href="../../public/index.php"
+                class="back-link"
+            >
+
+                ← Kembali ke Beranda
+
+            </a>
+
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
 
 </body>
+
 </html>
