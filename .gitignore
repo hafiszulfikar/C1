@@ -1,0 +1,6 @@
+# Dependency Composer
+/vendor/
+
+# Foto laporan yang diunggah saat aplikasi berjalan
+/public/uploads/*
+!/public/uploads/.gitkeep

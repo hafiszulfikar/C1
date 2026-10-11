@@ -1,37 +1,113 @@
+
 <?php
 // app/controllers/process_verify_user.php
+
 session_start();
 
-// Pastikan hanya admin yang bisa melakukan eksekusi skrip ini
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    die("Akses ditolak.");
+// ========================================
+// CEK LOGIN DAN ROLE
+// ========================================
+if (!isset($_SESSION['role'])) {
+    header("Location: ../../views/auth/login.php");
+    exit();
 }
 
-require_once '../../config/database.php';
+if ($_SESSION['role'] !== 'admin') {
+    $_SESSION['flash_error'] =
+        "Anda tidak memiliki izin untuk tindakan ini.";
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $user_id = $_POST['user_id'];
-    $action = $_POST['action']; // Berisi 'verify' atau 'reject'
+    header("Location: ../../public/index.php");
+    exit();
+}
 
-    // Tentukan status baru berdasarkan tombol yang ditekan
-    $new_status = ($action === 'verify') ? 'verified' : 'rejected';
+require_once __DIR__ . '/../../config/database.php';
 
-    try {
-        // Update status_akun di database
-        $stmt = $pdo->prepare("UPDATE users SET status_akun = :status WHERE id = :id");
-        $stmt->execute([
-            ':status' => $new_status,
-            ':id' => $user_id
-        ]);
+$halaman_dashboard = "../../views/admin/dashboard.php";
 
-        // Kembalikan admin ke halaman dashboard setelah proses selesai
-        header("Location: ../../views/admin/dashboard.php");
+// ========================================
+// CEK METODE REQUEST
+// ========================================
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    $_SESSION['flash_error'] = "Permintaan tidak valid.";
+    header("Location: " . $halaman_dashboard);
+    exit();
+}
+
+// ========================================
+// VALIDASI INPUT
+// ========================================
+$user_id = filter_var(
+    $_POST['user_id'] ?? null,
+    FILTER_VALIDATE_INT,
+    ['options' => ['min_range' => 1]]
+);
+
+$action = $_POST['action'] ?? '';
+
+if (!$user_id) {
+    $_SESSION['flash_error'] = "ID pengguna tidak valid.";
+    header("Location: " . $halaman_dashboard);
+    exit();
+}
+
+if (!in_array($action, ['verify', 'reject'], true)) {
+    $_SESSION['flash_error'] = "Tindakan yang diminta tidak valid.";
+    header("Location: " . $halaman_dashboard);
+    exit();
+}
+
+// ========================================
+// TENTUKAN STATUS BARU
+// ========================================
+$new_status = ($action === 'verify')
+    ? 'verified'
+    : 'rejected';
+
+// ========================================
+// PROSES VERIFIKASI / PENOLAKAN
+// ========================================
+try {
+    $stmt = $pdo->prepare("
+        UPDATE users
+        SET status_akun = :status
+        WHERE id = :id
+          AND role = 'pengguna'
+          AND status_akun = 'pending'
+    ");
+
+    $stmt->execute([
+        ':status' => $new_status,
+        ':id' => $user_id
+    ]);
+
+    if ($stmt->rowCount() !== 1) {
+        $_SESSION['flash_error'] =
+            "Akun tidak ditemukan atau sudah diproses.";
+
+        header("Location: " . $halaman_dashboard);
         exit();
-        
-    } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
     }
-} else {
-    echo "Akses ditolak.";
+
+    if ($action === 'verify') {
+        $_SESSION['flash_success'] =
+            "Akun pengguna berhasil diverifikasi.";
+    } else {
+        $_SESSION['flash_success'] =
+            "Registrasi akun pengguna berhasil ditolak.";
+    }
+
+    header("Location: " . $halaman_dashboard);
+    exit();
+
+} catch (Throwable $e) {
+    // Catat detail teknis di log server, bukan kepada pengguna.
+    error_log(
+        'process_verify_user.php: ' . $e->getMessage()
+    );
+
+    $_SESSION['flash_error'] =
+        "Terjadi kesalahan saat memproses akun pengguna. Silakan coba kembali.";
+
+    header("Location: " . $halaman_dashboard);
+    exit();
 }
-?>

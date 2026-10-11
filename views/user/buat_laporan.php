@@ -1168,6 +1168,17 @@ $nama_user = $_SESSION['nama'] ?? 'Pengguna';
 
         }
 
+        .flash-message.error {
+            padding: 12px 14px;
+            margin-bottom: 18px;
+            border: 1px solid #f5c2c0;
+            border-radius: 9px;
+            background: #fff1f0;
+            color: #b42318;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
     </style>
 
 </head>
@@ -1226,6 +1237,16 @@ $nama_user = $_SESSION['nama'] ?? 'Pengguna';
 
 <main class="main">
 
+    <?php if (!empty($_SESSION['flash_error'])): ?>
+        <div class="flash-message error" role="alert">
+            <?= htmlspecialchars(
+                $_SESSION['flash_error'],
+                ENT_QUOTES,
+                'UTF-8'
+            ) ?>
+        </div>
+        <?php unset($_SESSION['flash_error']); ?>
+    <?php endif; ?>
 
     <!-- PAGE HEADER -->
 

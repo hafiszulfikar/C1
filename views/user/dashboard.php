@@ -2,6 +2,7 @@
 // views/user/dashboard.php
 
 session_start();
+date_default_timezone_set('Asia/Jakarta');
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'pengguna') {
     header("Location: ../auth/login.php");
@@ -1619,6 +1620,29 @@ function reportStatusClass($status)
 
         }
 
+        /* ==================================================
+           ALERTS
+        ================================================== */
+        .server-alert {
+            padding: 12px 14px;
+            margin-bottom: 18px;
+            border-radius: 9px;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .server-alert.success {
+            color: #067647;
+            background: #ecfdf3;
+            border: 1px solid #abefc6;
+        }
+
+        .server-alert.error {
+            color: #b42318;
+            background: #fff1f0;
+            border: 1px solid #f5c2c0;
+        }
+
     </style>
 
 </head>
@@ -1676,6 +1700,34 @@ function reportStatusClass($status)
 ===================================================== -->
 
 <main class="main">
+
+    <?php if (!empty($_SESSION['flash_success'])): ?>
+
+        <div class="server-alert success" role="status">
+            <?= htmlspecialchars(
+                $_SESSION['flash_success'],
+                ENT_QUOTES,
+                'UTF-8'
+            ) ?>
+        </div>
+
+        <?php unset($_SESSION['flash_success']); ?>
+
+    <?php endif; ?>
+
+    <?php if (!empty($_SESSION['flash_error'])): ?>
+
+        <div class="server-alert error" role="alert">
+            <?= htmlspecialchars(
+                $_SESSION['flash_error'],
+                ENT_QUOTES,
+                'UTF-8'
+            ) ?>
+        </div>
+
+        <?php unset($_SESSION['flash_error']); ?>
+
+    <?php endif; ?>
 
 
     <!-- =================================================
@@ -2164,13 +2216,22 @@ function reportStatusClass($status)
                             </span>
 
 
-                            <?php if (
-                                $res[
-                                    'status_reservasi'
-                                ]
-                                ===
-                                'menunggu'
-                            ): ?>
+                            <?php
+                                $waktu_mulai_ts = strtotime(
+                                    $res['tanggal'] . ' ' . $res['start_time']
+                                );
+
+                                $boleh_batal =
+                                    $waktu_mulai_ts !== false
+                                    && in_array(
+                                        $res['status_reservasi'],
+                                        ['menunggu', 'disetujui'],
+                                        true
+                                    )
+                                    && time() <= ($waktu_mulai_ts - 3600);
+                                ?>
+
+                                <?php if ($boleh_batal): ?>
 
 
                                 <form

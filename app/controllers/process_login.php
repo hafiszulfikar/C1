@@ -16,10 +16,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
 
-    // =========================
-    // VALIDASI INPUT
-    // =========================
-
     if ($email === '' || $password === '') {
 
         $message = 'Email dan password wajib diisi.';
@@ -27,10 +23,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
 
         try {
-
-            // =========================
-            // CARI USER
-            // =========================
 
             $stmt = $pdo->prepare(
                 "SELECT *
@@ -44,22 +36,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $user = $stmt->fetch();
 
-
-            // =========================
-            // CEK LOGIN
-            // =========================
-
             if (
                 $user &&
-                password_verify(
-                    $password,
-                    $user['password']
-                )
+                password_verify($password, $user['password'])
             ) {
-
-                // =========================
-                // CEK STATUS AKUN
-                // =========================
 
                 if ($user['role'] === 'pengguna') {
 
@@ -83,9 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     } else {
 
-                        // =========================
-                        // LOGIN PENGGUNA BERHASIL
-                        // =========================
+                        session_regenerate_id(true);
 
                         $_SESSION['user_id'] = $user['id'];
                         $_SESSION['role'] = $user['role'];
@@ -94,41 +72,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         header(
                             "Location: ../../views/user/dashboard.php"
                         );
-
                         exit();
                     }
 
-                } else {
+                } elseif (in_array(
+                    $user['role'],
+                    ['admin', 'petugas'],
+                    true
+                )) {
 
-                    // =========================
-                    // LOGIN ADMIN / PETUGAS
-                    // =========================
+                    session_regenerate_id(true);
 
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['role'] = $user['role'];
                     $_SESSION['nama'] = $user['nama'];
-
-
-                    // =========================
-                    // REDIRECT ROLE
-                    // =========================
 
                     if ($user['role'] === 'admin') {
 
                         header(
                             "Location: ../../views/admin/dashboard.php"
                         );
-
                         exit();
 
-                    } elseif ($user['role'] === 'petugas') {
+                    } else {
 
                         header(
                             "Location: ../../views/officer/dashboard.php"
                         );
-
                         exit();
                     }
+
+                } else {
+
+                    $message =
+                        'Peran akun tidak valid. Silakan hubungi Admin.';
                 }
 
             } else {
@@ -139,8 +116,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         } catch (PDOException $e) {
 
+            error_log(
+                'process_login.php: ' . $e->getMessage()
+            );
+
             $message =
-                'Terjadi kesalahan saat menghubungkan ke database. ' .
+                'Terjadi kesalahan saat memproses login. ' .
                 'Silakan coba lagi.';
         }
     }
@@ -152,7 +133,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 ?>
-
 <!DOCTYPE html>
 <html lang="id">
 

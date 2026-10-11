@@ -411,6 +411,9 @@ foreach ($rekap_data as $row) {
             color:
                 white;
 
+            text-decoration:
+                none;
+
             font-size:
                 11px;
 
@@ -433,6 +436,48 @@ foreach ($rekap_data as $row) {
             transform:
                 translateY(-1px);
         }
+
+        .export-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        .export-csv {
+            background: #063b70;
+        }
+
+        .export-csv:hover {
+            background: #052f59;
+        }
+
+        .export-excel {
+            background: #0879d1;
+        }
+
+        .export-excel:hover {
+            background: #0667b3;
+        }
+
+        @media (max-width: 600px) {
+            .export-actions {
+                flex-wrap: wrap;
+                justify-content: flex-start;
+                margin-left: 0;
+            }
+        }
+
+        .export-pdf {
+            background: #0d9f6e;
+        }
+
+        .export-pdf:hover {
+            background: #087f58;
+        }
+
 
 
         /* ========================================
@@ -905,7 +950,9 @@ foreach ($rekap_data as $row) {
 
         }
 
+
     </style>
+
 
 </head>
 
@@ -995,14 +1042,31 @@ foreach ($rekap_data as $row) {
         </div>
 
 
-        <a
-            href="../../app/controllers/export_csv.php"
-            class="export-button"
-        >
+        <div class="export-actions">
 
-            Download Ekspor CSV
+            <a
+                href="../../app/controllers/export_csv.php"
+                class="export-button export-csv"
+            >
+                Download Ekspor CSV
+            </a>
 
-        </a>
+            <a
+                href="../../app/controllers/export_excel.php"
+                class="export-button export-excel"
+            >
+                Download Excel
+            </a>
+
+            <a
+                href="../../public/rekap_pdf.php"
+                class="export-button export-pdf"
+                rel="noopener"
+            >
+                Cetak / Simpan PDF
+            </a>
+
+        </div>
 
 
     </section>

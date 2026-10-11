@@ -1409,12 +1409,13 @@ $nama_admin = $_SESSION['nama'] ?? 'Admin';
 
 
                     <input
-                        type="email"
+                        type="text"
                         id="email"
                         name="email"
                         class="form-control"
                         placeholder="contoh@email.com"
                         autocomplete="email"
+                        inputmode="email"
                         required
                     >
 
@@ -1660,14 +1661,13 @@ $nama_admin = $_SESSION['nama'] ?? 'Admin';
             }
 
 
-            if (
-                !email.checkValidity()
-            ) {
+            const polaEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
+            if (!polaEmail.test(email.value.trim())) {
                 event.preventDefault();
 
                 email.setCustomValidity(
-                    'Silakan masukkan alamat email yang valid.'
+                    'Format email tidak valid. Contoh: nama@email.com'
                 );
 
                 email.reportValidity();
@@ -1693,21 +1693,6 @@ $nama_admin = $_SESSION['nama'] ?? 'Admin';
                 return;
             }
 
-
-            if (
-                password.value.length < 6
-            ) {
-
-                event.preventDefault();
-
-                password.setCustomValidity(
-                    'Password minimal 6 karakter.'
-                );
-
-                password.reportValidity();
-
-                return;
-            }
 
 
             // ===============================

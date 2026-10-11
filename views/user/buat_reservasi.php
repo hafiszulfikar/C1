@@ -117,6 +117,30 @@ $nama_user = $_SESSION['nama'] ?? 'Pengguna';
             line-height: 1.6;
         }
 
+        .server-alert {
+            display: block;
+            width: 100%;
+            height: auto;
+            box-sizing: border-box;
+            padding: 12px 14px;
+            margin: 0 0 18px;
+            border-radius: 9px;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .server-alert.error {
+            color: #b42318;
+            background: #fff1f0;
+            border: 1px solid #f5c2c0;
+        }
+
+        .server-alert.success {
+            color: #067647;
+            background: #ecfdf3;
+            border: 1px solid #abefc6;
+        }
+
 
         /* ======================================
            NAVBAR
@@ -1202,6 +1226,8 @@ $nama_user = $_SESSION['nama'] ?? 'Pengguna';
 
 <main class="main">
 
+    
+
 
     <!-- PAGE HEADER -->
 
@@ -1391,13 +1417,27 @@ $nama_user = $_SESSION['nama'] ?? 'Pengguna';
 
         </aside>
 
-
+        
 
         <!-- =================================
              FORM
         ================================== -->
 
         <section class="form-card">
+
+            <?php if (!empty($_SESSION['flash_error'])): ?>
+
+                <div class="server-alert error" role="alert">
+                    <?= htmlspecialchars(
+                        $_SESSION['flash_error'],
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ) ?>
+                </div>
+
+                <?php unset($_SESSION['flash_error']); ?>
+
+            <?php endif; ?>
 
 
             <div class="form-header">

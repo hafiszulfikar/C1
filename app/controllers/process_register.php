@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 require_once __DIR__ . '/../../config/database.php';
 
@@ -108,7 +109,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         } catch (PDOException $e) {
 
-            // Email sudah digunakan
             if ((string) $e->getCode() === '23000') {
 
                 $message =
@@ -116,6 +116,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'Silakan gunakan email lain.';
 
             } else {
+
+                error_log(
+                    'process_register.php: ' . $e->getMessage()
+                );
 
                 $message =
                     'Terjadi kesalahan saat membuat akun. ' .
@@ -127,6 +131,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 } else {
 
     $message = 'Akses tidak valid.';
+}
+
+// ========================================
+// JIKA REGISTRASI GAGAL
+// KEMBALIKAN KE FORM REGISTER
+// ========================================
+if (!$success) {
+    $_SESSION['register_error'] = $message !== ''
+        ? $message
+        : 'Pendaftaran gagal. Silakan coba kembali.';
+
+    header("Location: ../../views/auth/register.php");
+    exit();
 }
 
 ?>
@@ -884,7 +901,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php if ($success): ?>
 
                 <a
-                    href="login.php"
+                    href="../../views/auth/login.php"
                     class="nav-button"
                 >
                     Login
