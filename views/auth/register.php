@@ -1,7 +1,8 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+session_start();
+
+$register_error = $_SESSION['register_error'] ?? '';
+unset($_SESSION['register_error']);
 ?>
 
 <!DOCTYPE html>
@@ -680,6 +681,17 @@ error_reporting(E_ALL);
 
         }
 
+        .register-error {
+            padding: 12px 14px;
+            margin-bottom: 18px;
+            border: 1px solid #f5c2c0;
+            border-radius: 9px;
+            background: #fff1f0;
+            color: #b42318;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
     </style>
 
 </head>
@@ -794,6 +806,15 @@ error_reporting(E_ALL);
 
         <section class="register-form-area">
 
+            <?php if ($register_error !== ''): ?>
+                <div class="register-error" role="alert">
+                    <?= htmlspecialchars(
+                        $register_error,
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ) ?>
+                </div>
+            <?php endif; ?>
 
             <h2>
                 Buat akun
@@ -811,6 +832,8 @@ error_reporting(E_ALL);
             <form
                 action="../../app/controllers/process_register.php"
                 method="POST"
+                id="registerform"
+                novalidate
             >
 
 
@@ -846,11 +869,12 @@ error_reporting(E_ALL);
 
 
                     <input
-                        type="email"
+                        type="text"
                         id="email"
                         name="email"
                         placeholder="nama@email.com"
                         autocomplete="email"
+                        inputmode="email"
                         required
                     >
 
@@ -930,7 +954,7 @@ error_reporting(E_ALL);
                     type="submit"
                     class="submit-button"
                 >
-                    Create account
+                    Daftar Sekarang
                 </button>
 
 
@@ -971,6 +995,77 @@ error_reporting(E_ALL);
 
 
 </main>
+
+<script>
+const form = document.getElementById('registerform');
+
+const nama = document.getElementById('nama');
+const email = document.getElementById('email');
+const password = document.getElementById('password');
+const tipe = document.getElementById('tipe_pengguna');
+
+const polaEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+// Hapus pesan kesalahan ketika pengguna mengubah input
+[nama, email, password].forEach(input => {
+    input.addEventListener('input', () => {
+        input.setCustomValidity('');
+    });
+});
+
+tipe.addEventListener('change', () => {
+    tipe.setCustomValidity('');
+});
+
+form.addEventListener('submit', event => {
+    // Bersihkan pesan validasi sebelumnya
+    [nama, email, password, tipe].forEach(input => {
+        input.setCustomValidity('');
+    });
+
+    // Validasi nama
+    if (!nama.value.trim()) {
+        event.preventDefault();
+        nama.setCustomValidity('Nama lengkap wajib diisi.');
+        nama.reportValidity();
+        return;
+    }
+
+    // Validasi email kosong
+    if (!email.value.trim()) {
+        event.preventDefault();
+        email.setCustomValidity('Email wajib diisi.');
+        email.reportValidity();
+        return;
+    }
+
+    // Validasi format email
+    if (!polaEmail.test(email.value.trim())) {
+        event.preventDefault();
+        email.setCustomValidity(
+            'Format email tidak valid. Contoh: nama@email.com.'
+        );
+        email.reportValidity();
+        return;
+    }
+
+    // Validasi password
+    if (!password.value.trim()) {
+        event.preventDefault();
+        password.setCustomValidity('Password wajib diisi.');
+        password.reportValidity();
+        return;
+    }
+
+    // Validasi tipe pengguna
+    if (!tipe.value) {
+        event.preventDefault();
+        tipe.setCustomValidity('Silakan pilih status sivitas.');
+        tipe.reportValidity();
+        return;
+    }
+});
+</script>
 
 
 </body>

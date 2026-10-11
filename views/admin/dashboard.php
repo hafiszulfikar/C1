@@ -15,7 +15,62 @@ if (
     exit();
 }
 
+
 require_once __DIR__ . '/../../config/database.php';
+
+$dashboard_data_error = false;
+
+$pending_users = [];
+$daftar_fasilitas = [];
+
+$total_pending = 0;
+$total_fasilitas = 0;
+$total_aktif = 0;
+$total_nonaktif = 0;
+
+try {
+    // Data pengguna yang menunggu verifikasi
+    $stmt = $pdo->query("
+        SELECT id, nama, email, tipe_pengguna
+        FROM users
+        WHERE role = 'pengguna'
+          AND status_akun = 'pending'
+        ORDER BY id DESC
+    ");
+
+    $pending_users = $stmt->fetchAll();
+
+    // Data fasilitas
+    $stmt_fasilitas = $pdo->query("
+        SELECT *
+        FROM facilities
+        ORDER BY id DESC
+    ");
+
+    $daftar_fasilitas = $stmt_fasilitas->fetchAll();
+
+    // Statistik
+    $total_pending = count($pending_users);
+    $total_fasilitas = count($daftar_fasilitas);
+
+    foreach ($daftar_fasilitas as $fasilitas) {
+        if ($fasilitas['status_fasilitas'] === 'aktif') {
+            $total_aktif++;
+        } else {
+            $total_nonaktif++;
+        }
+    }
+
+} catch (PDOException $e) {
+    error_log(
+        'views/admin/dashboard.php: ' . $e->getMessage()
+    );
+
+    $dashboard_data_error = true;
+
+    $_SESSION['flash_error'] =
+        'Data dashboard gagal dimuat. Silakan coba muat ulang halaman.';
+}
 
 
 // ========================================
@@ -1534,6 +1589,28 @@ foreach ($daftar_fasilitas as $fasilitas) {
 
 <main class="main">
 
+    <?php if (!empty($_SESSION['flash_success'])): ?>
+        <div class="flash-message success" role="status">
+            <?= htmlspecialchars(
+                $_SESSION['flash_success'],
+                ENT_QUOTES,
+                'UTF-8'
+            ) ?>
+        </div>
+        <?php unset($_SESSION['flash_success']); ?>
+    <?php endif; ?>
+
+    <?php if (!empty($_SESSION['flash_error'])): ?>
+        <div class="flash-message error" role="alert">
+            <?= htmlspecialchars(
+                $_SESSION['flash_error'],
+                ENT_QUOTES,
+                'UTF-8'
+            ) ?>
+        </div>
+        <?php unset($_SESSION['flash_error']); ?>
+    <?php endif; ?>
+
 
     <!-- ======================================
          WELCOME
@@ -1663,6 +1740,13 @@ foreach ($daftar_fasilitas as $fasilitas) {
                 + Petugas
             </a>
 
+            <a
+                href="tambah_pengguna.php"
+                class="hero-button secondary"
+            >
+                + Pengguna
+            </a>
+
 
             <a
                 href="rekap.php"
@@ -1682,6 +1766,8 @@ foreach ($daftar_fasilitas as $fasilitas) {
     <!-- ======================================
          STATISTICS
     ======================================= -->
+
+    <?php if (!$dashboard_data_error): ?>
 
     <section class="stats">
 
@@ -2412,7 +2498,14 @@ foreach ($daftar_fasilitas as $fasilitas) {
 
     </section>
 
-
+    <?php else: ?>
+        <section class="card">
+            <div class="empty">
+                <h3>Data dashboard belum tersedia</h3>
+                <p>Silakan muat ulang halaman untuk mencoba kembali.</p>
+            </div>
+        </section>
+    <?php endif; ?>
 
     <!-- ======================================
          FOOTER
